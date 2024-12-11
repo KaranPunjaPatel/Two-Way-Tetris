@@ -1,12 +1,14 @@
 #include "block.h"
+#include <random>
 
 Block::Block()
 {
-    cellSize = 30;
+    cellSize = CELL_SIZE;
     rotationState = 0;
     colors = GetCellColors();
     rowOffset = 0;
     columnOffset = 0;
+    isBottomPart = rand() % 2;
 }
 
 void Block::Draw(int offsetX, int offsetY)
@@ -14,7 +16,7 @@ void Block::Draw(int offsetX, int offsetY)
     std::vector<Position> tiles = GetCellPositions();
     for (Position item : tiles)
     {
-        DrawRectangle(item.column * cellSize + offsetX, item.row * cellSize + offsetY, cellSize - 1, cellSize - 1, colors[id]);
+            DrawRectangle(item.column * cellSize + offsetX, item.row * cellSize + offsetY, cellSize - 1, cellSize - 1, colors[id]);
     }
 }
 

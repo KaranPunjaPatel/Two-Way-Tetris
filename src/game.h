@@ -20,6 +20,7 @@ private:
     Block GetRandomBlock();
     std::vector<Block> GetAllBlocks();
     bool IsBlockOutside();
+    bool IsBlockOutside2();
     void RotateBlock();
     void LockBlock();
     bool BlockFits();

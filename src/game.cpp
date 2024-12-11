@@ -44,17 +44,30 @@ std::vector<Block> Game::GetAllBlocks()
 void Game::Draw()
 {
     grid.Draw();
+    DrawLine(0, NUM_ROWS/2*CELL_SIZE + 11 + CELL_SIZE/2, NUM_COLS*CELL_SIZE + 11*2, NUM_ROWS/2*CELL_SIZE + 11 + CELL_SIZE/2, WHITE);
     currentBlock.Draw(11, 11);
     switch (nextBlock.id)
     {
     case 3:
-        nextBlock.Draw(255, 290);
+        if(nextBlock.isBottomPart){
+            nextBlock.Draw(255, -GetScreenHeight()/2 - 110);
+        }else{
+            nextBlock.Draw(255, 290);
+        }
         break;
     case 4:
-        nextBlock.Draw(255, 280);
+        if(nextBlock.isBottomPart){
+            nextBlock.Draw(255, -GetScreenHeight()/2 - 100);
+        }else{
+            nextBlock.Draw(255, 280);
+        }
         break;
     default:
-        nextBlock.Draw(270, 270);
+        if(nextBlock.isBottomPart){
+            nextBlock.Draw(270, -GetScreenHeight()/2 - 90);
+        }else{
+            nextBlock.Draw(270, 270);
+        }
         break;
     }
 }
@@ -90,9 +103,16 @@ void Game::MoveBlockLeft()
     if (!gameOver)
     {
         currentBlock.Move(0, -1);
-        if (IsBlockOutside() || BlockFits() == false)
-        {
+        if(currentBlock.isBottomPart){
+            if (IsBlockOutside2() || BlockFits() == false)
+            {
             currentBlock.Move(0, 1);
+            }
+        }else{
+            if (IsBlockOutside() || BlockFits() == false)
+            {
+                currentBlock.Move(0, 1);
+            }
         }
     }
 }
@@ -102,9 +122,16 @@ void Game::MoveBlockRight()
     if (!gameOver)
     {
         currentBlock.Move(0, 1);
-        if (IsBlockOutside() || BlockFits() == false)
-        {
+        if(currentBlock.isBottomPart){
+            if (IsBlockOutside2() || BlockFits() == false)
+            {
             currentBlock.Move(0, -1);
+            }
+        }else{
+            if (IsBlockOutside() || BlockFits() == false)
+            {
+                currentBlock.Move(0, -1);
+            }
         }
     }
 }
@@ -113,11 +140,20 @@ void Game::MoveBlockDown()
 {
     if (!gameOver)
     {
-        currentBlock.Move(1, 0);
-        if (IsBlockOutside() || BlockFits() == false)
-        {
+        if(currentBlock.isBottomPart){
             currentBlock.Move(-1, 0);
-            LockBlock();
+            if (IsBlockOutside2() || BlockFits() == false)
+            {
+                currentBlock.Move(1, 0);
+                LockBlock();
+            }
+        }else{
+            currentBlock.Move(1, 0);
+            if (IsBlockOutside() || BlockFits() == false)
+            {
+                currentBlock.Move(-1, 0);
+                LockBlock();
+            }
         }
     }
 }
@@ -135,18 +171,42 @@ bool Game::IsBlockOutside()
     return false;
 }
 
+bool Game::IsBlockOutside2()
+{
+    std::vector<Position> tiles = currentBlock.GetCellPositions();
+    for (Position item : tiles)
+    {
+        if (grid.IsCellOutside2(item.row, item.column))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void Game::RotateBlock()
 {
     if (!gameOver)
     {
         currentBlock.Rotate();
-        if (IsBlockOutside() || BlockFits() == false)
-        {
+        if(currentBlock.isBottomPart){
+            if (IsBlockOutside2() || BlockFits() == false)
+            {
             currentBlock.UndoRotation();
-        }
-        else
-        {
-            PlaySound(rotateSound);
+            }
+            else
+            {
+                PlaySound(rotateSound);
+            }
+        }else{
+            if (IsBlockOutside() || BlockFits() == false)
+            {
+                currentBlock.UndoRotation();
+            }
+            else
+            {
+                PlaySound(rotateSound);
+            }
         }
     }
 }
@@ -164,7 +224,7 @@ void Game::LockBlock()
         gameOver = true;
     }
     nextBlock = GetRandomBlock();
-    int rowsCleared = grid.ClearFullRows();
+    int rowsCleared = currentBlock.isBottomPart ? grid.ClearFullRows() : grid.ClearFullRowsBottom();
     if (rowsCleared > 0)
     {
         PlaySound(clearSound);

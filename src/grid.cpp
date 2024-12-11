@@ -4,9 +4,9 @@
 
 Grid::Grid()
 {
-    numRows = 20;
-    numCols = 10;
-    cellSize = 30;
+    numRows = NUM_ROWS;
+    numCols = NUM_COLS;
+    cellSize = CELL_SIZE;
     Initialize();
     colors = GetCellColors();
 }
@@ -48,7 +48,15 @@ void Grid::Draw()
 
 bool Grid::IsCellOutside(int row, int column)
 {
-    if (row >= 0 && row < numRows && column >= 0 && column < numCols)
+    if (row >= 0 && row <= numRows/2 && column >= 0 && column < numCols)
+    {
+        return false;
+    }
+    return true;
+}
+bool Grid::IsCellOutside2(int row, int column)
+{
+    if (row >= numRows/2 && row < numRows && column >= 0 && column < numCols)
     {
         return false;
     }
@@ -67,7 +75,8 @@ bool Grid::IsCellEmpty(int row, int column)
 int Grid::ClearFullRows()
 {
     int completed = 0;
-    for (int row = numRows - 1; row >= 0; row--)
+    // for (int row = numRows - 1; row >= 0; row--)
+    for (int row = numRows/2; row >= 0; row--)
     {
         if (IsRowFull(row))
         {
@@ -77,6 +86,24 @@ int Grid::ClearFullRows()
         else if (completed > 0)
         {
             MoveRowDown(row, completed);
+        }
+    }
+    return completed;
+}
+
+int Grid::ClearFullRowsBottom()
+{
+    int completed = 0;
+    for (int row = numRows/2; row < numRows; row++)
+    {
+        if (IsRowFull(row))
+        {
+            ClearRow(row);
+            completed++;
+        }
+        else if (completed > 0)
+        {
+            MoveRowUp(row, completed);
         }
     }
     return completed;
@@ -107,6 +134,15 @@ void Grid::MoveRowDown(int row, int numRows)
     for (int column = 0; column < numCols; column++)
     {
         grid[row + numRows][column] = grid[row][column];
+        grid[row][column] = 0;
+    }
+}
+
+void Grid::MoveRowUp(int row, int numRows)
+{
+    for (int column = 0; column < numCols; column++)
+    {
+        grid[row - numRows][column] = grid[row][column];
         grid[row][column] = 0;
     }
 }

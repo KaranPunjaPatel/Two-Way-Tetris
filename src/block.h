@@ -3,6 +3,7 @@
 #include <map>
 #include "position.h"
 #include "colors.h"
+#include "macros.h"
 
 class Block
 {
@@ -14,6 +15,7 @@ public:
     void Rotate();
     void UndoRotation();
     int id;
+    bool isBottomPart;
     std::map<int, std::vector<Position>> cells;
 
 private:

@@ -18,7 +18,7 @@ bool EventTriggered(double interval)
 
 int main()
 {
-    InitWindow(500, 620, "raylib Tetris");
+    InitWindow(500, 889, "Two Way Tetris");
     SetTargetFPS(60);
 
     Font font = LoadFontEx("Font/monogram.ttf", 64, 0, 0);
